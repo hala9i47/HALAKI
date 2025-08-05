@@ -9,7 +9,6 @@ const assets = [
     '/pages/customer-dashboard.html',
     '/pages/welcome.html',
     '/manifest.json',
-    '/favicon.ico',
     '/images/logo.png',
     'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
