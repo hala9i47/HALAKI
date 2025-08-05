@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حلاقي - الصفحة الرئيسية</title>
+    <link rel="stylesheet" href="../css/customer.css">
+    <style>
+        body {
+            background: #181818 !important;
+            color: #fff !important;
+        }
+        .app-header {
+            background: #ffd600 !important;
+            color: #222 !important;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .header-content h1 {
+            color: #222 !important;
+        }
+        .dashboard-card, .posts-container, .profile-details, .rewards-progress {
+            background: #232323 !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18) !important;
+        }
+        .dashboard-card h4, .dashboard-card .card-main, .progress-circle, .profile-image {
+            color: #ffd600 !important;
+            border-color: #ffd600 !important;
+        }
+        .nav-item.active, .floating-book-btn, .btn-logout {
+            background: #ffd600 !important;
+            color: #222 !important;
+        }
+        .nav-item, .nav-item i, .nav-item span {
+            color: #fff !important;
+        }
+        .bottom-nav {
+            background: #232323 !important;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        .floating-book-btn {
+            box-shadow: 0 4px 18px rgba(255,214,0,0.18) !important;
+        }
+        .badge {
+            background: #ffd600 !important;
+            color: #222 !important;
+        }
+        .profile-header h2, .profile-header p, .detail-item span {
+            color: #fff !important;
+        }
+        .progress-circle {
+            border: 3px solid #ffd600 !important;
+        }
+        .btn-logout:hover {
+            background: #ffe066 !important;
+            color: #222 !important;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- الهيدر -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1>حلاقي</h1>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content" id="mainContent">
+        <!-- صفحة الرئيسية -->
+        <div class="page active" id="homePage">
+            <div class="user-info">
+                <h2>مرحباً، <span id="userName">زائر</span></h2>
+                <p>نقاطك: <span id="userPoints">0</span></p>
+            </div>
+
+        <!-- منطقة الإعلانات التفاعلية -->
+        <div class="ads-section" id="adsSection">
+            <!-- مثال إعلان من الحلاق -->
+            <div class="ad-card ad-barber">
+                <div class="ad-content">
+                    <h3>عرض خاص من الحلاق!</h3>
+                    <p>احجز الآن واحصل على خصم 20% على الحلاقة التالية.</p>
+                </div>
+                <button class="ad-action-btn" onclick="alert('تم حجز العرض!')">احجز العرض</button>
+            </div>
+            <!-- مثال إعلان من النظام -->
+            <div class="ad-card ad-system">
+                <div class="ad-content">
+                    <h3>جديد في التطبيق</h3>
+                    <p>يمكنك الآن مشاركة رأيك حول تجربتك مع الحلاق.</p>
+                </div>
+                <button class="ad-action-btn" onclick="alert('تم فتح صفحة التقييم!')">قيّم تجربتك</button>
+            </div>
+        </div>
+
+            <!-- منطقة المنشورات -->
+            <div class="posts-container">
+                <div class="loading-posts">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>جاري تحميل المنشورات...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة الإشعارات -->
+        <div class="page" id="notificationsPage">
+            <h2>الإشعارات</h2>
+            <div class="notifications-list">
+                <!-- سيتم إضافة الإشعارات هنا -->
+            </div>
+        </div>
+
+        <!-- صفحة الخصومات والهدايا -->
+        <div class="page" id="rewardsPage">
+            <h2>الخصومات والهدايا</h2>
+            <div class="rewards-progress">
+                <div class="progress-circle">
+                    <span id="visitsCount">0</span>/5
+                    <p>زيارات</p>
+                </div>
+                <div class="reward-info">
+                    <h3>الهدية القادمة</h3>
+                    <p>خصم 50% + هدية من اختيارك</p>
+                </div>
+            </div>
+            <div class="available-gifts">
+                <h3>الهدايا المتاحة</h3>
+                <!-- سيتم إضافة الهدايا هنا -->
+            </div>
+        </div>
+
+        <!-- صفحة الملف الشخصي -->
+        <div class="page" id="profilePage">
+            <div class="profile-header">
+                <div class="profile-image">
+                    <img src="../images/default-avatar.jpg" alt="صورة الملف الشخصي" id="profileImage">
+                </div>
+                <h2 id="profileName">اسم المستخدم</h2>
+                <p id="profilePhone">رقم الهاتف</p>
+            </div>
+            <div class="profile-details">
+                <div class="detail-item">
+                    <i class="fas fa-scissors"></i>
+                    <span>آخر حلاقة: <span id="lastHaircut">-</span></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-star"></i>
+                    <span>النقاط المجمعة: <span id="totalPoints">0</span></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-history"></i>
+                    <span>عدد الزيارات: <span id="visitCount">0</span></span>
+                </div>
+            </div>
+            <button class="btn-logout">تسجيل الخروج</button>
+        </div>
+    </main>
+
+    <!-- زر الحجز العائم -->
+    <button class="floating-book-btn" id="bookAppointment">
+        <i class="fas fa-calendar-plus"></i>
+        <span>حجز موعد</span>
+    </button>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="homePage">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </button>
+        <button class="nav-item" data-page="notificationsPage">
+            <i class="fas fa-bell"></i>
+            <span>الإشعارات</span>
+            <span class="badge" id="notificationsBadge">0</span>
+        </button>
+        <div class="nav-item-spacer"></div>
+        <button class="nav-item" data-page="rewardsPage">
+            <i class="fas fa-gift"></i>
+            <span>الخصومات</span>
+        </button>
+        <button class="nav-item" data-page="profilePage">
+            <i class="fas fa-user"></i>
+            <span>حسابي</span>
+        </button>
+    </nav>
+
+    <script>
+        localStorage.setItem('debugMode', 'true');
+    </script>
+    <script type="module" src="../js/customer-dashboard.js"></script>
+</body>
+</html>

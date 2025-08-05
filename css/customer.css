@@ -1,0 +1,304 @@
+/* الأنماط العامة */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --background-color: #f5f6fa;
+    --text-color: #2c3e50;
+    --border-color: #dcdde1;
+    --nav-height: 60px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+}
+
+body {
+    background: #faf8fc;
+    color: #3d2064;
+    padding-bottom: 90px;
+}
+
+/* Header styles */
+.app-header {
+    background: #8e44ad;
+    color: #fff;
+    padding: 18px 0 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(142,68,173,0.08);
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+}
+
+/* Main content styles */
+.main-content {
+    padding: 1.2rem 0.7rem 0.7rem 0.7rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.page {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+.page.active {
+    display: block;
+}
+
+/* Card styles (like the 4 cards in the image) */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.dashboard-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(142,68,173,0.07);
+    padding: 18px 10px 10px 10px;
+    text-align: right;
+    position: relative;
+    min-height: 90px;
+}
+.dashboard-card i {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    color: #b39ddb;
+    font-size: 1.2em;
+}
+.dashboard-card h4 {
+    font-size: 1.05em;
+    color: #8e44ad;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.dashboard-card .card-main {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #8e44ad;
+}
+.dashboard-card .card-sub {
+    font-size: 0.9em;
+    color: #888;
+}
+
+/* Posts Container */
+.posts-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.2rem 0.7rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(142,68,173,0.07);
+}
+
+/* Loading Animation */
+.loading-posts {
+    text-align: center;
+    padding: 2rem 0 1rem 0;
+    color: #8e44ad;
+}
+.loading-posts i {
+    font-size: 2.2rem;
+    color: #8e44ad;
+    margin-bottom: 1rem;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.2rem 0;
+    box-shadow: 0 -2px 12px rgba(142,68,173,0.10);
+    z-index: 1000;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    height: 62px;
+}
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.2rem 0.7rem 0.1rem 0.7rem;
+    color: #bdbdbd;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    position: relative;
+    transition: color 0.2s;
+}
+.nav-item.active {
+    color: #fbc02d;
+}
+.nav-item i {
+    font-size: 1.35rem;
+    margin-bottom: 0.1rem;
+}
+.nav-item-spacer {
+    width: 60px;
+}
+
+/* Floating Book Button */
+.floating-book-btn {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #8e44ad;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 62px;
+    height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 18px rgba(142, 68, 173, 0.18);
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 1.7rem;
+    transition: transform 0.2s;
+}
+.floating-book-btn:active {
+    transform: translateX(-50%) scale(0.95);
+}
+.floating-book-btn span {
+    font-size: 0.7rem;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* Notifications Badge */
+.badge {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 50%;
+    padding: 0.18rem 0.45rem;
+    font-size: 0.7rem;
+    min-width: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Profile Section */
+.profile-header {
+    text-align: center;
+    padding: 2rem 0 1rem 0;
+}
+.profile-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1rem;
+    border: 3px solid #8e44ad;
+}
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.profile-details {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(142,68,173,0.07);
+}
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+}
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+/* Rewards Section */
+.rewards-progress {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 2px 8px rgba(142,68,173,0.07);
+}
+.progress-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #8e44ad;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #8e44ad;
+}
+.progress-circle p {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Logout Button */
+.btn-logout {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 1rem;
+    width: 100%;
+    margin-top: 2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+.btn-logout:hover {
+    background: #c0392b;
+}}

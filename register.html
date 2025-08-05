@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب جديد - BarberApp</title>
+    <link rel="stylesheet" href="css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="images/logo.png" alt="BarberApp Logo" class="auth-logo">
+                <h1>إنشاء حساب جديد</h1>
+            </div>
+
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <div class="profile-image-upload">
+                        <input type="file" id="profileImage" accept="image/*" style="display: none;">
+                        <div class="image-preview" onclick="document.getElementById('profileImage').click()">
+                            <i class="fas fa-user-circle"></i>
+                            <span>صورة شخصية (اختياري)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="fullName" required placeholder="الاسم الكامل">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input type="tel" id="phone" required placeholder="رقم الهاتف">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" required placeholder="كلمة المرور">
+                        <i class="fas fa-eye toggle-password"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="confirmPassword" required placeholder="تأكيد كلمة المرور">
+                        <i class="fas fa-eye toggle-password"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <i class="fas fa-calendar input-icon"></i>
+                        <input type="date" id="lastHaircut" required>
+                        <label for="lastHaircut" class="date-label">آخر موعد حلاقة</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <span class="btn-text">إنشاء حساب</span>
+                    <div class="loader" style="display: none;"></div>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- رسائل الخطأ والنجاح -->
+    <div id="toast" class="toast" style="display: none;"></div>
+
+    <script type="module" src="js/register.js"></script>
+</body>
+</html>
