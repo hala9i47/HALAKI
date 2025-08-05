@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffd600">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../favicon.ico">
     <title>حلاقي - الصفحة الرئيسية</title>
     <link rel="stylesheet" href="../css/customer.css">
     <style>
@@ -191,6 +196,16 @@
 
     <script>
         localStorage.setItem('debugMode', 'true');
+        // تسجيل الـ Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('../service-worker.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
     <script type="module" src="../js/customer-dashboard.js"></script>
 </body>
