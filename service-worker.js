@@ -11,7 +11,7 @@ const assets = [
     '/manifest.json',
     '/images/logo.png',
     'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
 ];
 
 // Install Service Worker
@@ -20,8 +20,7 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 return cache.addAll(assets);
-            })
-    );
+            }))
 });
 
 // Activate Service Worker
