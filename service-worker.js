@@ -1,15 +1,11 @@
 const CACHE_NAME = 'barber-app-v1';
 const assets = [
-    '/',
     '/index.html',
-    '/css/style.css',
     '/css/customer.css',
     '/js/customer-dashboard.js',
     '/js/firebase-config.js',
     '/pages/customer-dashboard.html',
     '/pages/welcome.html',
-    '/manifest.json',
-    '/images/logo.png',
     'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
 ];
