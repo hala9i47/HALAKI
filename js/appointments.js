@@ -11,13 +11,11 @@ async function _getApptRef(appointmentId){
 }
 
 async function _createNotification(userId, title, body, extra={}){
-  if(!userId) { console.warn('تخطي إشعار بدون userId'); return; }
-  // اعتبار بسيط لصلاحية المعرّف (معرّفات Firebase UID عادة > 10)
-  if(userId.length < 10) { console.warn('معرّف مستخدم غير متوقع للإشعار:', userId); return; }
+  if(!userId){ console.warn('تخطي إشعار بدون userId'); return; }
   try {
     await addDoc(collection(db,'notifications'), { userId, title, body, type:'chat', read:false, createdAt: serverTimestamp(), ...extra });
-    console.log('تم إنشاء إشعار للمستخدم', userId, title);
-  } catch(e){ console.error('فشل إنشاء إشعار', e); }
+    console.log('[Notify] تم إنشاء إشعار للمستخدم', userId, title, body);
+  } catch(e){ console.error('[Notify] فشل إنشاء إشعار', e); }
 }
 
 function _extractParticipants(appt){
@@ -145,13 +143,19 @@ export async function sendTextMessage(appointmentId, text){
     text,
     createdAt: serverTimestamp()
   });
-  const apptSnap = await getDoc(doc(db,'appointments',appointmentId));
+  const apptRef = doc(db,'appointments',appointmentId);
+  const apptSnap = await getDoc(apptRef);
   if(apptSnap.exists()){
-    const appt = apptSnap.data();
+    const appt = { id: appointmentId, ...apptSnap.data() };
+    // محاولة إصلاح customerId المفقود
+    if(!appt.customerId && appt.barberId && appt.barberId !== currentUserId){
+      try { await updateDoc(apptRef, { customerId: currentUserId, updatedAt: serverTimestamp() }); appt.customerId = currentUserId; console.log('[Fix] ضبط customerId للموعد'); } catch(err){ console.warn('فشل إصلاح customerId', err); }
+    }
     const participants = _extractParticipants(appt).filter(uid=>uid!==currentUserId);
-    if(!participants.length){ console.warn('لا يوجد طرف آخر لإشعاره'); }
+    console.log('[Chat] المشاركون المستهدفون للإشعار:', participants);
+    if(!participants.length){ console.warn('لا يوجد طرف آخر لإشعاره (قد يفتقد الموعد customerId)'); }
     for(const uid of participants){
-      await _createNotification(uid, 'رسالة جديدة', text.slice(0,60), { appointmentId, from: currentUserId });
+      await _createNotification(uid, 'رسالة جديدة', text.slice(0,60), { appointmentId, from: currentUserId, action:'chat_text' });
     }
   } else {
     console.warn('لم يتم العثور على الموعد لإنشاء إشعار');
@@ -170,12 +174,17 @@ export async function sendVoiceMessage(appointmentId, audioUrl, durationSec){
     durationSec: durationSec || null,
     createdAt: serverTimestamp()
   });
-  const apptSnap = await getDoc(doc(db,'appointments',appointmentId));
+  const apptRef = doc(db,'appointments',appointmentId);
+  const apptSnap = await getDoc(apptRef);
   if(apptSnap.exists()){
-    const appt = apptSnap.data();
+    const appt = { id: appointmentId, ...apptSnap.data() };
+    if(!appt.customerId && appt.barberId && appt.barberId !== currentUserId){
+      try { await updateDoc(apptRef, { customerId: currentUserId, updatedAt: serverTimestamp() }); appt.customerId = currentUserId; console.log('[Fix] ضبط customerId للموعد (صوت)'); } catch(err){ console.warn('فشل إصلاح customerId (صوت)', err); }
+    }
     const participants = _extractParticipants(appt).filter(uid=>uid!==currentUserId);
+    console.log('[Chat-Voice] المشاركون المستهدفون للإشعار:', participants);
     for(const uid of participants){
-      await _createNotification(uid, 'رسالة صوتية', 'لديك رسالة صوتية جديدة', { appointmentId, from: currentUserId });
+      await _createNotification(uid, 'رسالة صوتية', 'لديك رسالة صوتية جديدة', { appointmentId, from: currentUserId, action:'chat_voice' });
     }
   }
 }

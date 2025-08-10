@@ -20,8 +20,9 @@ function getBarberIdFromUrl() {
 
 const FALLBACK_BARBER_ID = 'general_barber';
 
-let currentUserId = null;
-onAuthStateChanged(auth, (u)=>{ currentUserId = u ? u.uid : null; });
+let currentUserId = null; let authResolved = false;
+submitBtn.disabled = true; // منع الإرسال حتى نعرف حالة الدخول
+onAuthStateChanged(auth, (u)=>{ currentUserId = u ? u.uid : null; authResolved = true; submitBtn.disabled = false; if(!u){ errorMsg.textContent='يجب تسجيل الدخول قبل الحجز'; errorMsg.style.display='block'; }});
 
 bookingForm.onsubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +30,8 @@ bookingForm.onsubmit = async (e) => {
     successMsg.style.display = 'none';
     submitBtn.disabled = true;
     try {
+        if(!authResolved){ throw new Error('يرجى الانتظار لحين التحقق من الحساب'); }
+        if(!currentUserId){ throw new Error('يرجى تسجيل الدخول للحجز'); }
         let barberId = getBarberIdFromUrl();
         const date = dateInput.value;
         const time = timeInput.value;
@@ -38,7 +41,7 @@ bookingForm.onsubmit = async (e) => {
         }
         await addDoc(collection(db, 'appointments'), {
             barberId,
-            customerId: currentUserId || null,
+            customerId: currentUserId,
             date,
             time,
             status: 'pending',
