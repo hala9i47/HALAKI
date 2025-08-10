@@ -1,7 +1,7 @@
-
 import { auth, db } from '../js/firebase-config.js';
+import { getOptimizedImageUrl } from '../js/cloudinary-config.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { collection, getDocs, doc, getDoc, query, where, orderBy, updateDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // وظيفة لإظهار رسالة خطأ في الصفحة
 function showError(message) {
@@ -45,6 +45,8 @@ function showInfo(message) {
     }, 3000);
 }
 
+let currentUserId = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
     showInfo('جاري التحقق من حالة تسجيل الدخول...');
     console.log('بدء تحميل صفحة لوحة التحكم...');
@@ -72,19 +74,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (userDoc.exists()) {
             const userData = userDoc.data();
-            console.log('نوع المستخدم:', userData.userType);
-            
-            if (userData.userType === 'barber') {
+            currentUserId = user.uid;
+            const role = userData.userType || 'customer';
+            console.log('نوع المستخدم:', role);
+            if (role === 'barber') {
                 console.log('هذا المستخدم حلاق، جاري التحويل إلى واجهة الحلاق...');
-                setTimeout(() => {
-                    window.location.replace('barber-dashboard.html');
-                }, 2000);
+                setTimeout(() => { window.location.replace('barber-dashboard.html'); }, 2000);
                 return;
             }
-            // تحديث واجهة المستخدم
-            console.log('تحديث واجهة المستخدم...');
-            updateUIWithUserData(userData);
-            loadPosts(); // تحميل المنشورات بعد التحقق من المستخدم
+            updateUIWithUserData({...userData, userType: role});
+            loadPosts();
+            // استماع لحظي للإشعارات بدل التحميل مرة واحدة
+            listenNotifications();
+            setupNotificationsPage();
         }
     } catch (error) {
         console.error("Error fetching user data:", error);
@@ -154,11 +156,39 @@ async function loadPosts() {
 
         const posts = [];
         postsSnapshot.forEach(doc => {
-            posts.push({ id: doc.id, ...doc.data() });
+            const raw = doc.data();
+            // تحويل media القادمة من Firestore (إذا كانت على شكل arrayValue في API REST سابقاً) إلى مصفوفة عادية
+            // في SDK 9 عادة ستأتي ككائن جاهز، نضمن فقط أنها مصفوفة صحيحة
+            let media = [];
+            if (raw.media && Array.isArray(raw.media)) {
+                media = raw.media;
+            } else if (raw.media && raw.media.values) { // حالة استعمال REST
+                media = raw.media.values.map(v => {
+                    const f = v.mapValue?.fields || {};
+                    return { type: f.type?.stringValue || 'image', url: f.url?.stringValue || '' };
+                }).filter(m => m.url);
+            }
+            // دعم عناصر media التي تحتوي كائنات داخلية ذات stringValue
+            media = media.map(m => {
+                const url = typeof m.url === 'object' && m.url?.stringValue ? m.url.stringValue : m.url;
+                const type = typeof m.type === 'object' && m.type?.stringValue ? m.type.stringValue : m.type;
+                return { type: type || 'image', url: url || '' };
+            }).filter(m => m.url);
+            // دعم الحقل القديم image
+            if (!media.length && raw.image) {
+                media = [{ type: 'image', url: raw.image }];
+            }
+            posts.push({ id: doc.id, ...raw, media });
         });
 
         // ترتيب المنشورات حسب التاريخ (الأحدث أولاً)
-        posts.sort((a, b) => b.timestamp - a.timestamp);
+        posts.sort((a, b) => {
+            try {
+                const ta = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : (a.timestamp?._seconds ? a.timestamp._seconds*1000 : 0);
+                const tb = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : (b.timestamp?._seconds ? b.timestamp._seconds*1000 : 0);
+                return tb - ta;
+            } catch(e) { return 0; }
+        });
 
         // عرض المنشورات
         postsContainer.innerHTML = posts.map(post => createPostHTML(post)).join('');
@@ -174,18 +204,33 @@ async function loadPosts() {
 
 // إنشاء HTML للمنشور
 function createPostHTML(post) {
+    // دعم مصفوفة وسائط: post.media = [{type:'image', url:'...'},{type:'video', url:'...'}]
+    let mediaHTML = '';
+    if (post.media && Array.isArray(post.media) && post.media.length) {
+        const normalized = post.media.map(m => {
+            if(!m) return null;
+            const url = typeof m.url === 'object' && m.url?.stringValue ? m.url.stringValue : m.url;
+            const type = typeof m.type === 'object' && m.type?.stringValue ? m.type.stringValue : m.type;
+            // إذا كانت صورة من Cloudinary، استخدم رابط مصغر
+            const displayUrl = (url && url.includes('res.cloudinary.com')) ? getOptimizedImageUrl(url, 300, 300, 'auto') : url;
+            return url ? { url: displayUrl, type: (type==='video'?'video':'image') } : null;
+        }).filter(Boolean);
+        if (normalized.length) {
+            mediaHTML = `<div class="post-media">` + normalized.map(m => m.type==='video' ? `<video class="post-media-video" src="${m.url}" controls playsinline></video>` : `<img class="post-media-img" src="${m.url}" alt="media">`).join('') + `</div>`;
+        }
+    }
     return `
         <article class="post-card" data-post-id="${post.id}">
             <div class="post-header">
-                <img src="${post.barberImage || '../images/default-avatar.jpg'}" alt="صورة الحلاق" class="barber-avatar">
+                <img src="${post.barberImage || '../images/default-avatar.jpg'}" alt="صورة الحلاق" class="barber-avatar" loading="lazy" width="44" height="44" style="width:44px;height:44px;object-fit:cover;border-radius:50%;border:2px solid #ffd600;flex-shrink:0;" />
                 <div class="post-info">
-                    <h3 class="barber-name">${post.barberName}</h3>
+                    <h3 class="barber-name">${post.barberName || ''}</h3>
                     <span class="post-time">${formatTimestamp(post.timestamp)}</span>
                 </div>
             </div>
             <div class="post-content">
-                ${post.image ? `<img src="${post.image}" alt="صورة المنشور" class="post-image">` : ''}
-                <p class="post-text">${post.content}</p>
+                ${mediaHTML}
+                <p class="post-text">${post.content || ''}</p>
             </div>
             <div class="post-actions">
                 <button class="action-button like-button" data-post-id="${post.id}">
@@ -301,3 +346,78 @@ document.addEventListener('DOMContentLoaded', function() {
     if(document.getElementById('notificationsBadge'))
         document.getElementById('notificationsBadge').textContent = '2';
 });
+
+async function loadNotifications(){
+  // تم الإبقاء على الدالة كخيار يدوي، لكن الآن نستخدم listenNotifications()
+  if(!currentUserId) return;
+  const listEl = document.querySelector('#notificationsPage .notifications-list');
+  if(listEl) listEl.innerHTML = '<div style="padding:12px;">جاري التحميل...</div>';
+  return; // الاعتماد على الاستماع اللحظي
+}
+
+function listenNotifications(){
+  if(!currentUserId) return;
+  const listEl = document.querySelector('#notificationsPage .notifications-list');
+  if(listEl) listEl.innerHTML = '<div style="padding:12px;">جاري التحميل...</div>';
+  try {
+    const qNotif = query(collection(db,'notifications'), where('userId','==', currentUserId)); // بدون orderBy لتفادي الفهرس
+    onSnapshot(qNotif, snap => {
+      if(snap.empty){
+        if(listEl) listEl.innerHTML = '<div style="padding:12px;opacity:0.7;">لا توجد إشعارات</div>';
+        updateNotificationsBadge(0);
+        return;
+      }
+      const docsArr = [];
+      snap.forEach(d=> docsArr.push(d));
+      docsArr.sort((a,b)=>{ // ترتيب محلي تنازلي
+        const ta = a.data().createdAt?.toDate ? a.data().createdAt.toDate().getTime() : 0;
+        const tb = b.data().createdAt?.toDate ? b.data().createdAt.toDate().getTime() : 0;
+        return tb - ta;
+      });
+      let unreadCount=0; let html='';
+      docsArr.forEach(d=>{
+        const n = d.data();
+        const isUnread = (n.read === false || n.read === undefined);
+        if(isUnread) unreadCount++;
+        const time = formatNotifTime(n.createdAt);
+        html += `<div class=\"notif-item ${isUnread?'unread':''}\" data-id=\"${d.id}\">\n  <div class=\"notif-title\">${n.title || 'إشعار'}</div>\n  <div class=\"notif-body\">${n.body || ''}</div>\n  <div class=\"notif-time\">${time}</div>\n</div>`;
+      });
+      if(listEl) listEl.innerHTML = html;
+      updateNotificationsBadge(unreadCount);
+    }, err => {
+      console.error('خطأ استماع الإشعارات', err);
+      if(listEl) listEl.innerHTML = '<div style="padding:12px;color:#f66;">خطأ في تحميل الإشعارات</div>';
+    });
+  } catch(e){
+    console.error('فشل بدء الاستماع للإشعارات', e);
+    if(listEl) listEl.innerHTML = '<div style="padding:12px;color:#f66;">خطأ في تحميل الإشعارات</div>';
+  }
+}
+function updateNotificationsBadge(count){
+  const badge = document.getElementById('notificationsBadge');
+  if(!badge) return;
+  if(count>0){ badge.textContent = count; badge.style.display='block'; }
+  else { badge.style.display='none'; }
+}
+function setupNotificationsPage(){
+  const listEl = document.querySelector('#notificationsPage .notifications-list');
+  if(!listEl) return;
+  listEl.addEventListener('click', async (e)=>{
+    const item = e.target.closest('.notif-item');
+    if(!item) return;
+    if(item.classList.contains('unread')){
+      const id = item.getAttribute('data-id');
+      try { await updateDoc(doc(db,'notifications',id), { read:true }); item.classList.remove('unread'); recalcUnread(); } catch(err){ console.error(err); }
+    }
+  });
+}
+async function recalcUnread(){
+  if(!currentUserId) return;
+  const qNotif = query(collection(db,'notifications'), where('userId','==', currentUserId), where('read','==', false));
+  const snap = await getDocs(qNotif);
+  updateNotificationsBadge(snap.size);
+}
+function formatNotifTime(ts){
+  if(!ts) return '';
+  try { const d = ts.toDate(); return d.toLocaleString('ar-EG',{hour:'2-digit', minute:'2-digit'}); } catch(e){ return ''; }
+}

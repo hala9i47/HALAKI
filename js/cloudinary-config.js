@@ -1,8 +1,8 @@
 // تكوين Cloudinary
 const cloudinaryConfig = {
     cloudName: 'dhixv7vvh',
-    uploadPreset: 'barberapp_unsigned', // يجب إنشاء unsigned upload preset في لوحة تحكم Cloudinary
-    folder: 'barberapp' // المجلد الافتراضي للصور
+    uploadPreset: 'hala9i', // يجب أن يطابق اسم الـ preset في Cloudinary
+    folder: 'barberapp'
 };
 
 // دالة لرفع الصور إلى Cloudinary
@@ -30,6 +30,19 @@ async function uploadToCloudinary(file, customFolder = '') {
         console.error('خطأ في رفع الصورة:', error);
         throw error;
     }
+}
+
+// دالة لرفع الملفات بشكل عام (صورة/فيديو/صوت) إلى Cloudinary
+async function uploadToCloudinaryGeneric(file, {folder=cloudinaryConfig.folder, resourceType='image'}={}) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+    formData.append('folder', folder);
+    const endpoint = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/${resourceType}/upload`;
+    const response = await fetch(endpoint, { method:'POST', body: formData });
+    const data = await response.json();
+    if(!response.ok || !data.secure_url) throw new Error(data.error?.message || 'فشل رفع الملف');
+    return { url: data.secure_url, publicId: data.public_id, resourceType };
 }
 
 // دالة لحذف الصور من Cloudinary
@@ -63,5 +76,6 @@ export {
     cloudinaryConfig,
     uploadToCloudinary,
     deleteFromCloudinary,
-    getOptimizedImageUrl
+    getOptimizedImageUrl,
+    uploadToCloudinaryGeneric
 };

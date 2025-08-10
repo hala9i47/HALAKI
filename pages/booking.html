@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حجز موعد</title>
+    <link rel="stylesheet" href="../css/customer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #181818; color: #fff; }
+        .booking-container { max-width: 400px; margin: 40px auto; background: #232323; border-radius: 14px; box-shadow: 0 2px 12px #0002; padding: 24px 18px; }
+        .booking-container h2 { color: #ffd600; margin-bottom: 18px; text-align: center; }
+        .form-group { margin-bottom: 16px; }
+        label { color: #ffd600; margin-bottom: 6px; display: block; }
+        input, select { width: 100%; padding: 10px; border-radius: 8px; border: none; background: #181818; color: #fff; margin-bottom: 8px; }
+        button { background: #ffd600; color: #222; border: none; border-radius: 8px; padding: 10px 18px; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 10px; }
+        button:disabled { opacity: 0.6; }
+        .success-msg { color: #4caf50; text-align: center; margin-top: 18px; }
+        .error-msg { color: #f44336; text-align: center; margin-top: 18px; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <h1>حجز موعد</h1>
+        </div>
+    </header>
+    <main>
+        <div class="booking-container">
+            <h2>احجز موعدك</h2>
+            <form id="bookingForm">
+                <!-- تم حذف اختيار الحلاق -->
+                <div class="form-group">
+                    <label for="dateInput">تاريخ الموعد</label>
+                    <input type="date" id="dateInput" required min="{{today}}">
+                </div>
+                <div class="form-group">
+                    <label for="timeInput">الوقت</label>
+                    <input type="time" id="timeInput" required>
+                </div>
+                <button type="submit" id="submitBtn">تأكيد الحجز</button>
+                <div class="success-msg" id="successMsg" style="display:none;"></div>
+                <div class="error-msg" id="errorMsg" style="display:none;"></div>
+            </form>
+        </div>
+    </main>
+    <script type="module" src="../js/booking.js"></script>
+</body>
+</html>

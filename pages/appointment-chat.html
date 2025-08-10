@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>محادثة الموعد</title>
+  <link rel="stylesheet" href="../css/customer.css" />
+  <style>
+    body { background:#181818; color:#fff; font-family:'Cairo',sans-serif; }
+    .chat-wrapper{ max-width:600px; margin:0 auto; padding:16px; }
+    .status-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .status-badge { padding:4px 10px; border-radius:20px; font-size:0.8rem; background:#333; }
+    .status-confirmed { background:#1e7f34; }
+    .status-pending { background:#777; }
+    .status-reschedule_pending { background:#b36b00; }
+    .status-cancelled { background:#aa1e1e; }
+    .status-completed { background:#004d7a; }
+    #messagesContainer { background:#222; border-radius:12px; padding:12px; height:320px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+    .chat-msg { max-width:70%; padding:8px 12px; border-radius:14px; line-height:1.4; font-size:0.95rem; }
+    .chat-msg.me { background:#ffd600; color:#222; align-self:flex-end; }
+    .chat-msg.other { background:#333; color:#fff; align-self:flex-start; }
+    .composer { display:flex; gap:8px; margin-top:12px; }
+    .composer input { flex:1; border:none; border-radius:8px; padding:10px; background:#2d2d2d; color:#fff; }
+    .composer button { background:#ffd600; color:#222; border:none; border-radius:8px; padding:10px 16px; cursor:pointer; }
+    .actions-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    .actions-row button { background:#333; color:#ffd600; border:1px solid #ffd600; border-radius:8px; padding:8px 14px; cursor:pointer; }
+    .proposal-box { background:#352f00; border:1px solid #ffd600; padding:10px; border-radius:8px; margin-top:12px; display:none; }
+    form#proposeForm { display:flex; gap:6px; flex-wrap:wrap; margin-top:14px; }
+    form#proposeForm input { background:#2d2d2d; color:#fff; border:none; padding:8px; border-radius:6px; }
+    form#proposeForm button { background:#ffd600; color:#222; border:none; padding:8px 14px; border-radius:6px; }
+    #recordBtn { width:48px; }
+  </style>
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="status-row">
+      <div id="statusBadge" class="status-badge">...</div>
+      <div class="actions-row">
+        <button id="cancelApptBtn">إلغاء</button>
+        <button id="completeApptBtn">إنهاء</button>
+      </div>
+    </div>
+    <div id="proposalBox" class="proposal-box">
+      <div id="proposedInfo" style="margin-bottom:8px; font-size:0.9rem;"></div>
+      <div style="display:flex; gap:8px;">
+        <button id="acceptProposalBtn" style="background:#1e7f34; color:#fff; border:none; padding:6px 12px; border-radius:6px;">قبول</button>
+        <button id="rejectProposalBtn" style="background:#aa1e1e; color:#fff; border:none; padding:6px 12px; border-radius:6px;">رفض</button>
+      </div>
+    </div>
+    <form id="proposeForm">
+      <input type="date" id="proposeDate" required />
+      <input type="time" id="proposeTime" required />
+      <button type="submit">اقتراح موعد جديد</button>
+    </form>
+
+    <div id="messagesContainer"></div>
+
+    <div class="composer">
+      <input id="messageInput" placeholder="اكتب رسالة..." />
+      <button id="sendMsgBtn" type="button">إرسال</button>
+      <button id="recordBtn" type="button">🎤</button>
+    </div>
+  </div>
+  <script type="module" src="../js/appointment-chat.js"></script>
+</body>
+</html>

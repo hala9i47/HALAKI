@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>حلاقي - لوحة الحلاق</title>
+    <link rel="stylesheet" href="../css/customer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #181818; color: #fff; }
+        .app-header { background: #ffd600; color: #222; }
+        .barber-main { padding: 24px 12px; }
+        .barber-info { text-align: center; margin-bottom: 24px; }
+        .barber-info img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #ffd600; margin-bottom: 10px; }
+        .barber-info h2 { margin: 0 0 8px 0; color: #ffd600; }
+        .barber-info p { margin: 0; color: #ccc; }
+        .barber-actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+        .barber-actions button { background: #ffd600; color: #222; border: none; border-radius: 8px; padding: 10px 18px; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+        .barber-actions button:hover { background: #ffe066; }
+        .appointments-list { background: #232323; border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+        .appointments-list h3 { color: #ffd600; margin-bottom: 12px; }
+        .appointment-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; }
+        .appointment-item:last-child { border-bottom: none; }
+        .appointment-customer { color: #fff; font-weight: 600; }
+        .appointment-time { color: #ffd600; font-size: 0.95em; }
+        .appointment-actions button { background: #232323; color: #ffd600; border: 1px solid #ffd600; border-radius: 6px; padding: 4px 10px; margin-right: 6px; cursor: pointer; font-size: 0.95em; }
+        .appointment-actions button:hover { background: #ffd600; color: #222; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <h1>لوحة الحلاق</h1>
+        </div>
+    </header>
+    <main class="barber-main">
+        <div class="barber-info">
+            <img src="../images/default-avatar.jpg" alt="صورة الحلاق" id="barberProfileImage">
+            <h2 id="barberName">اسم الحلاق</h2>
+            <p id="barberPhone">رقم الهاتف</p>
+        </div>
+        <div class="barber-actions">
+            <button id="addPostBtn"><i class="fas fa-plus"></i> منشور جديد</button>
+            <button id="viewStatsBtn"><i class="fas fa-chart-bar"></i> الإحصائيات</button>
+        </div>
+        <div class="appointments-list">
+            <h3>مواعيد اليوم</h3>
+            <div id="appointmentsContainer">
+                <!-- سيتم تحميل المواعيد من قاعدة البيانات -->
+            </div>
+        </div>
+        <!-- نافذة منبثقة لإضافة منشور جديد -->
+        <div id="postModal" style="display:none; position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
+            <div style="background:#232323;padding:24px 18px;border-radius:12px;max-width:350px;width:90vw;box-shadow:0 2px 12px #000;">
+                <h3 style="color:#ffd600;margin-bottom:12px;">منشور جديد</h3>
+                <textarea id="postContent" rows="4" style="width:100%;border-radius:8px;border:none;padding:8px;margin-bottom:12px;"></textarea>
+                <div style="margin-bottom:12px;">
+                    <label style="color:#ffd600;display:block;margin-bottom:6px;">إرفاق صورة أو فيديو:</label>
+                    <input id="postMedia" type="file" accept="image/*,video/*" multiple style="color:#fff;" />
+                    <div id="mediaPreview" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"></div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button id="cancelPostBtn" style="background:#333;color:#fff;padding:6px 16px;border-radius:6px;border:none;">إلغاء</button>
+                    <button id="submitPostBtn" style="background:#ffd600;color:#222;padding:6px 16px;border-radius:6px;border:none;">نشر</button>
+                </div>
+            </div>
+        </div>
+        <!-- نافذة الإحصائيات -->
+        <div id="statsModal" style="display:none; position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
+            <div style="background:#232323;padding:24px 18px;border-radius:12px;max-width:350px;width:90vw;box-shadow:0 2px 12px #000;">
+                <h3 style="color:#ffd600;margin-bottom:12px;">إحصائيات الحلاق</h3>
+                <div id="statsContent" style="color:#fff;"></div>
+                <div style="text-align:left;margin-top:16px;">
+                    <button id="closeStatsBtn" style="background:#ffd600;color:#222;padding:6px 16px;border-radius:6px;border:none;">إغلاق</button>
+                </div>
+            </div>
+        </div>
+        <!-- يمكن إضافة المزيد من الأقسام لاحقاً -->
+    </main>
+    <script type="module" src="../js/barber-dashboard.js"></script>
+    <script>
+    // من أجل تجربة المواعيد: إذا ظهرت مواعيد اليوم في القائمة وتم تحديثها عند التأكيد أو الإلغاء فهذا يعني أن الربط يعمل.
+    // إذا لم تظهر مواعيد، تأكد من وجود بيانات في appointments في قاعدة البيانات وأن لكل موعد barberId مطابق لمعرف الحلاق الحالي.
+    </script>
+</body>
+</html>
